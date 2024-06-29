@@ -1,19 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-const initialState = {
-  isLoggedIn: false,
-};
+import { setUser } from "../../../util/localStorage";
 
 const userSlice = createSlice({
   name: "user",
-  initialState,
+  initialState: {
+    isLoggedIn: false,
+  },
   reducers: {
-    login: (state, action) => {
-      // login process
+    authenticate: (state, { payload }) => {
+      const user = payload;
+      if (user.email === process.env.REACT_APP_ADMIN_EMAIL) {
+        if (user.password === process.env.REACT_APP_ADMIN_PASSWORD) {
+          state.isLoggedIn = true;
+          setUser(user); // set on localsotrage
+        }
+      } else {
+        state.isLoggedIn = false;
+        setUser({});
+      }
     },
   },
 });
 
-export const { login } = userSlice.actions;
-
+export const { authenticate } = userSlice.actions;
 export default userSlice.reducer;
